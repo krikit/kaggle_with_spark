@@ -1,0 +1,2524 @@
+{
+  "paragraphs": [
+    {
+      "text": "%md\n\nSpark 맛보기\n\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\n\n* 본 튜토리얼은 edX의 [Introduction to Big Data with Apache Spark](https://courses.edx.org/courses/BerkeleyX/CS100.1x/1T2015/) 강의 자료 중 Lab 1의 일부인 [Spark Tutorial](http://nbviewer.jupyter.org/github/spark-mooc/mooc-setup/blob/master/spark_tutorial_student.ipynb)을 코드 부분만 Scala로 포팅한 것입니다.\n\n* 원본 자료는 Python 언어를 사용하는 PySpark을 이용해 설명하고 있으므로, 포팅한 코드와 다소 어긋날 수도 있음을 이해해 주시기 바랍니다.\n\n* **_강의 자료가 저작권이 있을 수 있으므로, 인터넷의 공개된 장소에 올리는 것은 지양해 주시면 좋겠습니다._**",
+      "dateUpdated": "Feb 24, 2016 3:30:12 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456234455899_1459885281",
+      "id": "20160223-133415_1644806926",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch1\u003eSpark 맛보기\u003c/h1\u003e\n\u003cul\u003e\n\u003cli\u003e\u003cp\u003e본 튜토리얼은 edX의 \u003ca href\u003d\"https://courses.edx.org/courses/BerkeleyX/CS100.1x/1T2015/\"\u003eIntroduction to Big Data with Apache Spark\u003c/a\u003e 강의 자료 중 Lab 1의 일부인 \u003ca href\u003d\"http://nbviewer.jupyter.org/github/spark-mooc/mooc-setup/blob/master/spark_tutorial_student.ipynb\"\u003eSpark Tutorial\u003c/a\u003e을 코드 부분만 Scala로 포팅한 것입니다.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\u003cp\u003e원본 자료는 Python 언어를 사용하는 PySpark을 이용해 설명하고 있으므로, 포팅한 코드와 다소 어긋날 수도 있음을 이해해 주시기 바랍니다.\u003c/p\u003e\n\u003c/li\u003e\n\u003cli\u003e\u003cp\u003e\u003cstrong\u003e\u003cem\u003e강의 자료가 저작권이 있을 수 있으므로, 인터넷의 공개된 장소에 올리는 것은 지양해 주시면 좋겠습니다.\u003c/em\u003e\u003c/strong\u003e\u003c/p\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 1:34:15 PM",
+      "dateStarted": "Feb 24, 2016 3:30:13 PM",
+      "dateFinished": "Feb 24, 2016 3:30:18 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n### **Part 2: An introduction to using [Apache Spark](https://spark.apache.org/)**",
+      "dateUpdated": "Feb 24, 2016 3:30:13 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456142967157_676170671",
+      "id": "20160222-120927_1809498130",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch3\u003e\u003cstrong\u003ePart 2: An introduction to using \u003ca href\u003d\"https://spark.apache.org/\"\u003eApache Spark\u003c/a\u003e\u003c/strong\u003e\u003c/h3\u003e\n"
+      },
+      "dateCreated": "Feb 22, 2016 12:09:27 PM",
+      "dateStarted": "Feb 24, 2016 3:30:18 PM",
+      "dateFinished": "Feb 24, 2016 3:30:21 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### **Spark Context**\n#### In Spark, communication occurs between a driver and executors.  The driver has Spark jobs that it needs to run and these jobs are split into tasks that are submitted to the executors for completion.  The results from these tasks are delivered back to the driver.\n#### In part 1, we saw that normal python code can be executed via cells. When using Databricks Cloud this code gets executed in the Spark driver\u0027s Java Virtual Machine (JVM) and not in an executor\u0027s JVM, and when using an IPython notebook it is executed within the kernel associated with the notebook. Since no Spark functionality is actually being used, no tasks are launched on the executors.\n#### In order to use Spark and its API we will need to use a `SparkContext`.  When running Spark, you start a new Spark application by creating a [SparkContext](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.SparkContext).  When the `SparkContext` is created, it asks the master for some cores to use to do work.  The master sets these cores aside just for you; they won\u0027t be used for other applications. When using Databricks Cloud or the virtual machine provisioned for this class, the `SparkContext` is created for you automatically as `sc`.",
+      "dateUpdated": "Feb 24, 2016 3:30:14 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorHide": true,
+        "editorMode": "ace/mode/markdown"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456223461707_844106284",
+      "id": "20160223-103101_1434949821",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cstrong\u003eSpark Context\u003c/strong\u003e\u003c/h4\u003e\n\u003ch4\u003eIn Spark, communication occurs between a driver and executors.  The driver has Spark jobs that it needs to run and these jobs are split into tasks that are submitted to the executors for completion.  The results from these tasks are delivered back to the driver.\u003c/h4\u003e\n\u003ch4\u003eIn part 1, we saw that normal python code can be executed via cells. When using Databricks Cloud this code gets executed in the Spark driver\u0027s Java Virtual Machine (JVM) and not in an executor\u0027s JVM, and when using an IPython notebook it is executed within the kernel associated with the notebook. Since no Spark functionality is actually being used, no tasks are launched on the executors.\u003c/h4\u003e\n\u003ch4\u003eIn order to use Spark and its API we will need to use a \u003ccode\u003eSparkContext\u003c/code\u003e.  When running Spark, you start a new Spark application by creating a \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.SparkContext\"\u003eSparkContext\u003c/a\u003e.  When the \u003ccode\u003eSparkContext\u003c/code\u003e is created, it asks the master for some cores to use to do work.  The master sets these cores aside just for you; they won\u0027t be used for other applications. When using Databricks Cloud or the virtual machine provisioned for this class, the \u003ccode\u003eSparkContext\u003c/code\u003e is created for you automatically as \u003ccode\u003esc\u003c/code\u003e.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:31:01 AM",
+      "dateStarted": "Feb 24, 2016 3:30:21 PM",
+      "dateFinished": "Feb 24, 2016 3:30:23 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### **(2a) Example Cluster**\n#### The diagram below shows an example cluster, where the cores allocated for an application are outlined in purple.\n![executors](http://spark-mooc.github.io/web-assets/images/executors.png)\n#### You can view the details of your Spark application in the Spark web UI.  The web UI is accessible in Databricks cloud by going to \"Clusters\" and then clicking on the \"View Spark UI\" link for your cluster.  When running locally you\u0027ll find it at [localhost:4040](http://localhost:4040).  In the web UI, under the \"Jobs\" tab, you can see a list of jobs that have been scheduled or run.  It\u0027s likely there isn\u0027t any thing interesting here yet because we haven\u0027t run any jobs, but we\u0027ll return to this page later.\n#### At a high level, every Spark application consists of a driver program that launches various parallel operations on executor Java Virtual Machines (JVMs) running either in a cluster or locally on the same machine. In Databricks Cloud, \"Databricks Shell\" is the driver program.  When running locally, \"PySparkShell\" is the driver program. In all cases, this driver program contains the main loop for the program and creates distributed datasets on the cluster, then applies operations (transformations \u0026 actions) to those datasets.\n#### Driver programs access Spark through a SparkContext object, which represents a connection to a computing cluster. A Spark context object (`sc`) is the main entry point for Spark functionality. A Spark context can be used to create Resilient Distributed Datasets (RDDs) on a cluster.\n#### Try printing out `sc` to see its type.",
+      "dateUpdated": "Feb 24, 2016 3:30:14 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456223557364_-1188234809",
+      "id": "20160223-103237_765544565",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cstrong\u003e(2a) Example Cluster\u003c/strong\u003e\u003c/h4\u003e\n\u003ch4\u003eThe diagram below shows an example cluster, where the cores allocated for an application are outlined in purple.\u003c/h4\u003e\n\u003cp\u003e\u003cimg src\u003d\"http://spark-mooc.github.io/web-assets/images/executors.png\" alt\u003d\"executors\" /\u003e\u003c/p\u003e\n\u003ch4\u003eYou can view the details of your Spark application in the Spark web UI.  The web UI is accessible in Databricks cloud by going to \u0026ldquo;Clusters\u0026rdquo; and then clicking on the \u0026ldquo;View Spark UI\u0026rdquo; link for your cluster.  When running locally you\u0027ll find it at \u003ca href\u003d\"http://localhost:4040\"\u003elocalhost:4040\u003c/a\u003e.  In the web UI, under the \u0026ldquo;Jobs\u0026rdquo; tab, you can see a list of jobs that have been scheduled or run.  It\u0027s likely there isn\u0027t any thing interesting here yet because we haven\u0027t run any jobs, but we\u0027ll return to this page later.\u003c/h4\u003e\n\u003ch4\u003eAt a high level, every Spark application consists of a driver program that launches various parallel operations on executor Java Virtual Machines (JVMs) running either in a cluster or locally on the same machine. In Databricks Cloud, \u0026ldquo;Databricks Shell\u0026rdquo; is the driver program.  When running locally, \u0026ldquo;PySparkShell\u0026rdquo; is the driver program. In all cases, this driver program contains the main loop for the program and creates distributed datasets on the cluster, then applies operations (transformations \u0026amp; actions) to those datasets.\u003c/h4\u003e\n\u003ch4\u003eDriver programs access Spark through a SparkContext object, which represents a connection to a computing cluster. A Spark context object (\u003ccode\u003esc\u003c/code\u003e) is the main entry point for Spark functionality. A Spark context can be used to create Resilient Distributed Datasets (RDDs) on a cluster.\u003c/h4\u003e\n\u003ch4\u003eTry printing out \u003ccode\u003esc\u003c/code\u003e to see its type.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:32:37 AM",
+      "dateStarted": "Feb 24, 2016 3:30:23 PM",
+      "dateFinished": "Feb 24, 2016 3:30:25 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Display the type of the Spark Context sc\nsc",
+      "dateUpdated": "Feb 24, 2016 3:30:15 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456223593732_-1066592859",
+      "id": "20160223-103313_1291164898",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res1: org.apache.spark.SparkContext \u003d org.apache.spark.SparkContext@171214aa\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:33:13 AM",
+      "dateStarted": "Feb 24, 2016 3:30:16 PM",
+      "dateFinished": "Feb 24, 2016 3:31:36 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### **(2b) `SparkContext` attributes**\n#### You can use Python\u0027s [dir()](https://docs.python.org/2/library/functions.html?highlight\u003ddir#dir) function to get a list of all the attributes (including methods) accessible through the `sc` object.",
+      "dateUpdated": "Feb 24, 2016 3:30:16 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456223623843_-540794355",
+      "id": "20160223-103343_1259320426",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cstrong\u003e(2b) \u003ccode\u003eSparkContext\u003c/code\u003e attributes\u003c/strong\u003e\u003c/h4\u003e\n\u003ch4\u003eYou can use Python\u0027s \u003ca href\u003d\"https://docs.python.org/2/library/functions.html?highlight\u003ddir#dir\"\u003edir()\u003c/a\u003e function to get a list of all the attributes (including methods) accessible through the \u003ccode\u003esc\u003c/code\u003e object.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:33:43 AM",
+      "dateStarted": "Feb 24, 2016 3:30:26 PM",
+      "dateFinished": "Feb 24, 2016 3:30:29 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// List sc\u0027s attributes\n// dir(sc)",
+      "dateUpdated": "Feb 24, 2016 3:30:17 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456223641189_1275251102",
+      "id": "20160223-103401_1014792440",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": ""
+      },
+      "dateCreated": "Feb 23, 2016 10:34:01 AM",
+      "dateStarted": "Feb 24, 2016 3:30:24 PM",
+      "dateFinished": "Feb 24, 2016 3:31:36 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### **(2c) Getting help**\n#### Alternatively, you can use Python\u0027s [help()](https://docs.python.org/2/library/functions.html?highlight\u003dhelp#help) function to get an easier to read list of all the attributes, including examples, that the `sc` object has.",
+      "dateUpdated": "Feb 24, 2016 3:30:18 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456223659956_-1775392279",
+      "id": "20160223-103419_1956431868",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cstrong\u003e(2c) Getting help\u003c/strong\u003e\u003c/h4\u003e\n\u003ch4\u003eAlternatively, you can use Python\u0027s \u003ca href\u003d\"https://docs.python.org/2/library/functions.html?highlight\u003dhelp#help\"\u003ehelp()\u003c/a\u003e function to get an easier to read list of all the attributes, including examples, that the \u003ccode\u003esc\u003c/code\u003e object has.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:34:19 AM",
+      "dateStarted": "Feb 24, 2016 3:30:29 PM",
+      "dateFinished": "Feb 24, 2016 3:30:31 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Use help to obtain more detailed information\n// help(sc)",
+      "dateUpdated": "Feb 24, 2016 3:30:19 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456223695086_-572420385",
+      "id": "20160223-103455_2043414723",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": ""
+      },
+      "dateCreated": "Feb 23, 2016 10:34:55 AM",
+      "dateStarted": "Feb 24, 2016 3:31:36 PM",
+      "dateFinished": "Feb 24, 2016 3:31:38 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// After reading the help we\u0027ve decided we want to use sc.version to see what version of Spark we are running\nsc.version",
+      "dateUpdated": "Feb 24, 2016 3:30:21 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456224846815_-497720568",
+      "id": "20160223-105406_29538070",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res10: String \u003d 1.6.0\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:54:06 AM",
+      "dateStarted": "Feb 24, 2016 3:31:38 PM",
+      "dateFinished": "Feb 24, 2016 3:31:40 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Help can be used on any Python object\n// help(map)",
+      "dateUpdated": "Feb 24, 2016 3:30:22 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456224843752_-476189953",
+      "id": "20160223-105403_1173319993",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": ""
+      },
+      "dateCreated": "Feb 23, 2016 10:54:03 AM",
+      "dateStarted": "Feb 24, 2016 3:31:39 PM",
+      "dateFinished": "Feb 24, 2016 3:31:42 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n### **Part 3: Using RDDs and chaining together transformations and actions**",
+      "dateUpdated": "Feb 24, 2016 3:30:23 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456223786085_1860685686",
+      "id": "20160223-103626_2143604777",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch3\u003e\u003cstrong\u003ePart 3: Using RDDs and chaining together transformations and actions\u003c/strong\u003e\u003c/h3\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:36:26 AM",
+      "dateStarted": "Feb 24, 2016 3:30:31 PM",
+      "dateFinished": "Feb 24, 2016 3:30:33 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### **Working with your first RDD**\n#### In Spark, we first create a base [Resilient Distributed Dataset](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD) (RDD). We can then apply one or more transformations to that base RDD. *An RDD is immutable, so once it is created, it cannot be changed.* As a result, each transformation creates a new RDD. Finally, we can apply one or more actions to the RDDs.  Note that Spark uses lazy evaluation, so transformations are not actually executed until an action occurs.\n#### We will perform several exercises to obtain a better understanding of RDDs:\n* ##### Create a Python collection of 10,000 integers\n* ##### Create a Spark base RDD from that collection\n* ##### Subtract one from each value using `map`\n* ##### Perform action `collect` to view results\n* ##### Perform action `count` to view counts\n* ##### Apply transformation `filter` and view results with `collect`\n* ##### Learn about lambda functions\n* ##### Explore how lazy evaluation works and the debugging challenges that it introduces",
+      "dateUpdated": "Feb 24, 2016 3:30:24 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456223834005_-1630312939",
+      "id": "20160223-103714_317048531",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cstrong\u003eWorking with your first RDD\u003c/strong\u003e\u003c/h4\u003e\n\u003ch4\u003eIn Spark, we first create a base \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD\"\u003eResilient Distributed Dataset\u003c/a\u003e (RDD). We can then apply one or more transformations to that base RDD. \u003cem\u003eAn RDD is immutable, so once it is created, it cannot be changed.\u003c/em\u003e As a result, each transformation creates a new RDD. Finally, we can apply one or more actions to the RDDs.  Note that Spark uses lazy evaluation, so transformations are not actually executed until an action occurs.\u003c/h4\u003e\n\u003ch4\u003eWe will perform several exercises to obtain a better understanding of RDDs:\u003c/h4\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ch5\u003eCreate a Python collection of 10,000 integers\u003c/h5\u003e\n\u003c/li\u003e\n\u003cli\u003e\u003ch5\u003eCreate a Spark base RDD from that collection\u003c/h5\u003e\n\u003c/li\u003e\n\u003cli\u003e\u003ch5\u003eSubtract one from each value using \u003ccode\u003emap\u003c/code\u003e\u003c/h5\u003e\n\u003c/li\u003e\n\u003cli\u003e\u003ch5\u003ePerform action \u003ccode\u003ecollect\u003c/code\u003e to view results\u003c/h5\u003e\n\u003c/li\u003e\n\u003cli\u003e\u003ch5\u003ePerform action \u003ccode\u003ecount\u003c/code\u003e to view counts\u003c/h5\u003e\n\u003c/li\u003e\n\u003cli\u003e\u003ch5\u003eApply transformation \u003ccode\u003efilter\u003c/code\u003e and view results with \u003ccode\u003ecollect\u003c/code\u003e\u003c/h5\u003e\n\u003c/li\u003e\n\u003cli\u003e\u003ch5\u003eLearn about lambda functions\u003c/h5\u003e\n\u003c/li\u003e\n\u003cli\u003e\u003ch5\u003eExplore how lazy evaluation works and the debugging challenges that it introduces\u003c/h5\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:37:14 AM",
+      "dateStarted": "Feb 24, 2016 3:30:33 PM",
+      "dateFinished": "Feb 24, 2016 3:30:35 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### **(3a) Create a Python collection of integers in the range of 1 .. 10000**\n#### We will use the [xrange()](https://docs.python.org/2/library/functions.html?highlight\u003dxrange#xrange) function to create a [list()](https://docs.python.org/2/library/functions.html?highlight\u003dlist#list) of integers.  `xrange()` only generates values as they are needed.  This is different from the behavior of [range()](https://docs.python.org/2/library/functions.html?highlight\u003drange#range) which generates the complete list upon execution.  Because of this `xrange()` is more memory efficient than `range()`, especially for large ranges.",
+      "dateUpdated": "Feb 24, 2016 3:30:25 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456223845474_1097572087",
+      "id": "20160223-103725_1039901627",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cstrong\u003e(3a) Create a Python collection of integers in the range of 1 .. 10000\u003c/strong\u003e\u003c/h4\u003e\n\u003ch4\u003eWe will use the \u003ca href\u003d\"https://docs.python.org/2/library/functions.html?highlight\u003dxrange#xrange\"\u003exrange()\u003c/a\u003e function to create a \u003ca href\u003d\"https://docs.python.org/2/library/functions.html?highlight\u003dlist#list\"\u003elist()\u003c/a\u003e of integers.  \u003ccode\u003exrange()\u003c/code\u003e only generates values as they are needed.  This is different from the behavior of \u003ca href\u003d\"https://docs.python.org/2/library/functions.html?highlight\u003drange#range\"\u003erange()\u003c/a\u003e which generates the complete list upon execution.  Because of this \u003ccode\u003exrange()\u003c/code\u003e is more memory efficient than \u003ccode\u003erange()\u003c/code\u003e, especially for large ranges.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:37:25 AM",
+      "dateStarted": "Feb 24, 2016 3:30:36 PM",
+      "dateFinished": "Feb 24, 2016 3:30:37 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val data \u003d 1 until 10001\n\n// Data is just a normal Python list\n// Obtain data\u0027s first element\ndata(0)\n\n// We can check the size of the list using the len() function\ndata.length",
+      "dateUpdated": "Feb 24, 2016 3:30:27 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorHide": false,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456223867350_2607365",
+      "id": "20160223-103747_1192923350",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "data: scala.collection.immutable.Range \u003d Range(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172...res18: Int \u003d 1\nres21: Int \u003d 10000\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:37:47 AM",
+      "dateStarted": "Feb 24, 2016 3:31:42 PM",
+      "dateFinished": "Feb 24, 2016 3:31:47 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### **(3b) Distributed data and using a collection to create an RDD**\n#### In Spark, datasets are represented as a list of entries, where the list is broken up into many different partitions that are each stored on a different machine.  Each partition holds a unique subset of the entries in the list.  Spark calls datasets that it stores \"Resilient Distributed Datasets\" (RDDs).\n#### One of the defining features of Spark, compared to other data analytics frameworks (e.g., Hadoop), is that it stores data in memory rather than on disk.  This allows Spark applications to run much more quickly, because they are not slowed down by needing to read data from disk.\n#### The figure below illustrates how Spark breaks a list of data entries into partitions that are each stored in memory on a worker.\n![partitions](http://spark-mooc.github.io/web-assets/images/partitions.png)\n#### To create the RDD, we use `sc.parallelize()`, which tells Spark to create a new set of input data based on data that is passed in.  In this example, we will provide an `xrange`.  The second argument to the [sc.parallelize()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.SparkContext.parallelize) method tells Spark how many partitions to break the data into when it stores the data in memory (we\u0027ll talk more about this later in this tutorial). Note that for better performance when using `parallelize`, `xrange()` is recommended if the input represents a range. This is the reason why we used `xrange()` in 3a.\n#### There are many different types of RDDs.  The base class for RDDs is [pyspark.RDD](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD) and other RDDs subclass `pyspark.RDD`.  Since the other RDD types inherit from `pyspark.RDD` they have the same APIs and are functionally identical.  We\u0027ll see that `sc.parallelize()` generates a `pyspark.rdd.PipelinedRDD` when its input is an `xrange`, and a `pyspark.RDD` when its input is a `range`.\n#### After we generate RDDs, we can view them in the \"Storage\" tab of the web UI.  You\u0027ll notice that new datasets are not listed until Spark needs to return a result due to an action being executed.  This feature of Spark is called \"lazy evaluation\".  This allows Spark to avoid performing unnecessary calculations.",
+      "dateUpdated": "Feb 24, 2016 3:30:29 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456223921407_515385704",
+      "id": "20160223-103841_1359245567",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cstrong\u003e(3b) Distributed data and using a collection to create an RDD\u003c/strong\u003e\u003c/h4\u003e\n\u003ch4\u003eIn Spark, datasets are represented as a list of entries, where the list is broken up into many different partitions that are each stored on a different machine.  Each partition holds a unique subset of the entries in the list.  Spark calls datasets that it stores \u0026ldquo;Resilient Distributed Datasets\u0026rdquo; (RDDs).\u003c/h4\u003e\n\u003ch4\u003eOne of the defining features of Spark, compared to other data analytics frameworks (e.g., Hadoop), is that it stores data in memory rather than on disk.  This allows Spark applications to run much more quickly, because they are not slowed down by needing to read data from disk.\u003c/h4\u003e\n\u003ch4\u003eThe figure below illustrates how Spark breaks a list of data entries into partitions that are each stored in memory on a worker.\u003c/h4\u003e\n\u003cp\u003e\u003cimg src\u003d\"http://spark-mooc.github.io/web-assets/images/partitions.png\" alt\u003d\"partitions\" /\u003e\u003c/p\u003e\n\u003ch4\u003eTo create the RDD, we use \u003ccode\u003esc.parallelize()\u003c/code\u003e, which tells Spark to create a new set of input data based on data that is passed in.  In this example, we will provide an \u003ccode\u003exrange\u003c/code\u003e.  The second argument to the \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.SparkContext.parallelize\"\u003esc.parallelize()\u003c/a\u003e method tells Spark how many partitions to break the data into when it stores the data in memory (we\u0027ll talk more about this later in this tutorial). Note that for better performance when using \u003ccode\u003eparallelize\u003c/code\u003e, \u003ccode\u003exrange()\u003c/code\u003e is recommended if the input represents a range. This is the reason why we used \u003ccode\u003exrange()\u003c/code\u003e in 3a.\u003c/h4\u003e\n\u003ch4\u003eThere are many different types of RDDs.  The base class for RDDs is \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD\"\u003epyspark.RDD\u003c/a\u003e and other RDDs subclass \u003ccode\u003epyspark.RDD\u003c/code\u003e.  Since the other RDD types inherit from \u003ccode\u003epyspark.RDD\u003c/code\u003e they have the same APIs and are functionally identical.  We\u0027ll see that \u003ccode\u003esc.parallelize()\u003c/code\u003e generates a \u003ccode\u003epyspark.rdd.PipelinedRDD\u003c/code\u003e when its input is an \u003ccode\u003exrange\u003c/code\u003e, and a \u003ccode\u003epyspark.RDD\u003c/code\u003e when its input is a \u003ccode\u003erange\u003c/code\u003e.\u003c/h4\u003e\n\u003ch4\u003eAfter we generate RDDs, we can view them in the \u0026ldquo;Storage\u0026rdquo; tab of the web UI.  You\u0027ll notice that new datasets are not listed until Spark needs to return a result due to an action being executed.  This feature of Spark is called \u0026ldquo;lazy evaluation\u0026rdquo;.  This allows Spark to avoid performing unnecessary calculations.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:38:41 AM",
+      "dateStarted": "Feb 24, 2016 3:30:37 PM",
+      "dateFinished": "Feb 24, 2016 3:30:38 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Parallelize data using 8 partitions\n// This operation is a transformation of data into an RDD\n// Spark uses lazy evaluation, so no Spark jobs are run at this point\nval xrangeRDD \u003d sc.parallelize(data, 8)",
+      "dateUpdated": "Feb 24, 2016 3:30:30 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456223995253_1155146504",
+      "id": "20160223-103955_1734576632",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "xrangeRDD: org.apache.spark.rdd.RDD[Int] \u003d ParallelCollectionRDD[0] at parallelize at \u003cconsole\u003e:34\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:39:55 AM",
+      "dateStarted": "Feb 24, 2016 3:31:43 PM",
+      "dateFinished": "Feb 24, 2016 3:31:50 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Let\u0027s view help on parallelize\n// help(sc.parallelize)",
+      "dateUpdated": "Feb 24, 2016 3:30:31 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456224190582_-68680095",
+      "id": "20160223-104310_697187362",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": ""
+      },
+      "dateCreated": "Feb 23, 2016 10:43:10 AM",
+      "dateStarted": "Feb 24, 2016 3:31:48 PM",
+      "dateFinished": "Feb 24, 2016 3:31:51 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Let\u0027s see what type sc.parallelize() returned\nprintln(s\"type of xrangeRDD: ${xrangeRDD}\")\n\n// How about if we use a range\nval dataRange \u003d (1 until 10001).toList\nval rangeRDD \u003d sc.parallelize(dataRange, 8)\nprintln(s\"type of dataRangeRDD: ${rangeRDD}\")",
+      "dateUpdated": "Feb 24, 2016 3:30:32 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456224251029_-1287671880",
+      "id": "20160223-104411_2115818949",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "type of xrangeRDD: ParallelCollectionRDD[0] at parallelize at \u003cconsole\u003e:34\ndataRange: List[Int] \u003d List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 17...rangeRDD: org.apache.spark.rdd.RDD[Int] \u003d ParallelCollectionRDD[1] at parallelize at \u003cconsole\u003e:31\ntype of dataRangeRDD: ParallelCollectionRDD[1] at parallelize at \u003cconsole\u003e:31\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:44:11 AM",
+      "dateStarted": "Feb 24, 2016 3:31:51 PM",
+      "dateFinished": "Feb 24, 2016 3:31:55 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Each RDD gets a unique ID\nprintln(s\"xrangeRDD id: ${xrangeRDD.id}\")\nprintln(s\"rangeRDD id: ${rangeRDD.id}\")",
+      "dateUpdated": "Feb 24, 2016 3:30:33 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456224496616_-1103040025",
+      "id": "20160223-104816_141354554",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "xrangeRDD id: 0\nrangeRDD id: 1\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:48:16 AM",
+      "dateStarted": "Feb 24, 2016 3:31:53 PM",
+      "dateFinished": "Feb 24, 2016 3:31:57 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// We can name each newly created RDD using the setName() method\nxrangeRDD.setName(\"[[My first RDD]]\")",
+      "dateUpdated": "Feb 24, 2016 3:30:34 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456224667947_-1008175089",
+      "id": "20160223-105107_216564499",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res41: xrangeRDD.type \u003d [[My first RDD]] ParallelCollectionRDD[0] at parallelize at \u003cconsole\u003e:34\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:51:07 AM",
+      "dateStarted": "Feb 24, 2016 3:31:56 PM",
+      "dateFinished": "Feb 24, 2016 3:31:58 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Let\u0027s view the lineage (the set of transformations) of the RDD using toDebugString()\nxrangeRDD.toDebugString",
+      "dateUpdated": "Feb 24, 2016 3:30:35 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456224705921_515091779",
+      "id": "20160223-105145_1065417165",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res44: String \u003d (8) [[My first RDD]] ParallelCollectionRDD[0] at parallelize at \u003cconsole\u003e:34 []\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:51:45 AM",
+      "dateStarted": "Feb 24, 2016 3:31:58 PM",
+      "dateFinished": "Feb 24, 2016 3:32:00 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Let\u0027s use help to see what methods we can call on this RDD\n// help(xrangeRDD)",
+      "dateUpdated": "Feb 24, 2016 3:30:36 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456224723570_1600129650",
+      "id": "20160223-105203_399179336",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": ""
+      },
+      "dateCreated": "Feb 23, 2016 10:52:03 AM",
+      "dateStarted": "Feb 24, 2016 3:31:59 PM",
+      "dateFinished": "Feb 24, 2016 3:32:00 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Let\u0027s see how many partitions the RDD will be split into by using the getNumPartitions()\nxrangeRDD.getNumPartitions",
+      "dateUpdated": "Feb 24, 2016 3:30:37 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456224782572_924788061",
+      "id": "20160223-105302_1752886077",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res50: Int \u003d 8\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:53:02 AM",
+      "dateStarted": "Feb 24, 2016 3:32:01 PM",
+      "dateFinished": "Feb 24, 2016 3:32:02 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### **(3c): Subtract one from each value using `map`**\n#### So far, we\u0027ve created a distributed dataset that is split into many partitions, where each partition is stored on a single machine in our cluster.  Let\u0027s look at what happens when we do a basic operation on the dataset.  Many useful data analysis operations can be specified as \"do something to each item in the dataset\".  These data-parallel operations are convenient because each item in the dataset can be processed individually: the operation on one entry doesn\u0027t effect the operations on any of the other entries.  Therefore, Spark can parallelize the operation.\n#### `map(f)`, the most common Spark transformation, is one such example: it applies a function `f` to each item in the dataset, and outputs the resulting dataset.  When you run `map()` on a dataset, a single *stage* of tasks is launched.  A *stage* is a group of tasks that all perform the same computation, but on different input data.  One task is launched for each partitition, as shown in the example below.  A task is a unit of execution that runs on a single machine. When we run `map(f)` within a partition, a new *task* applies `f` to all of the entries in a particular partition, and outputs a new partition. In this example figure, the dataset is broken into four partitions, so four `map()` tasks are launched.\n![tasks](http://spark-mooc.github.io/web-assets/images/tasks.png)\n#### The figure below shows how this would work on the smaller data set from the earlier figures.  Note that one task is launched for each partition.\n![foo](http://spark-mooc.github.io/web-assets/images/map.png)\n#### When applying the `map()` transformation, each item in the parent RDD will map to one element in the new RDD. So, if the parent RDD has twenty elements, the new RDD will also have twenty items.\n#### Now we will use `map()` to subtract one from each value in the base RDD we just created. First, we define a Python function called `sub()` that will subtract one from the input integer. Second, we will pass each item in the base RDD into a `map()` transformation that applies the `sub()` function to each element. And finally, we print out the RDD transformation hierarchy using `toDebugString()`.",
+      "dateUpdated": "Feb 24, 2016 3:30:37 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456225034222_1942401285",
+      "id": "20160223-105714_456398150",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cstrong\u003e(3c): Subtract one from each value using \u003ccode\u003emap\u003c/code\u003e\u003c/strong\u003e\u003c/h4\u003e\n\u003ch4\u003eSo far, we\u0027ve created a distributed dataset that is split into many partitions, where each partition is stored on a single machine in our cluster.  Let\u0027s look at what happens when we do a basic operation on the dataset.  Many useful data analysis operations can be specified as \u0026ldquo;do something to each item in the dataset\u0026rdquo;.  These data-parallel operations are convenient because each item in the dataset can be processed individually: the operation on one entry doesn\u0027t effect the operations on any of the other entries.  Therefore, Spark can parallelize the operation.\u003c/h4\u003e\n\u003ch4\u003e\u003ccode\u003emap(f)\u003c/code\u003e, the most common Spark transformation, is one such example: it applies a function \u003ccode\u003ef\u003c/code\u003e to each item in the dataset, and outputs the resulting dataset.  When you run \u003ccode\u003emap()\u003c/code\u003e on a dataset, a single \u003cem\u003estage\u003c/em\u003e of tasks is launched.  A \u003cem\u003estage\u003c/em\u003e is a group of tasks that all perform the same computation, but on different input data.  One task is launched for each partitition, as shown in the example below.  A task is a unit of execution that runs on a single machine. When we run \u003ccode\u003emap(f)\u003c/code\u003e within a partition, a new \u003cem\u003etask\u003c/em\u003e applies \u003ccode\u003ef\u003c/code\u003e to all of the entries in a particular partition, and outputs a new partition. In this example figure, the dataset is broken into four partitions, so four \u003ccode\u003emap()\u003c/code\u003e tasks are launched.\u003c/h4\u003e\n\u003cp\u003e\u003cimg src\u003d\"http://spark-mooc.github.io/web-assets/images/tasks.png\" alt\u003d\"tasks\" /\u003e\u003c/p\u003e\n\u003ch4\u003eThe figure below shows how this would work on the smaller data set from the earlier figures.  Note that one task is launched for each partition.\u003c/h4\u003e\n\u003cp\u003e\u003cimg src\u003d\"http://spark-mooc.github.io/web-assets/images/map.png\" alt\u003d\"foo\" /\u003e\u003c/p\u003e\n\u003ch4\u003eWhen applying the \u003ccode\u003emap()\u003c/code\u003e transformation, each item in the parent RDD will map to one element in the new RDD. So, if the parent RDD has twenty elements, the new RDD will also have twenty items.\u003c/h4\u003e\n\u003ch4\u003eNow we will use \u003ccode\u003emap()\u003c/code\u003e to subtract one from each value in the base RDD we just created. First, we define a Python function called \u003ccode\u003esub()\u003c/code\u003e that will subtract one from the input integer. Second, we will pass each item in the base RDD into a \u003ccode\u003emap()\u003c/code\u003e transformation that applies the \u003ccode\u003esub()\u003c/code\u003e function to each element. And finally, we print out the RDD transformation hierarchy using \u003ccode\u003etoDebugString()\u003c/code\u003e.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:57:14 AM",
+      "dateStarted": "Feb 24, 2016 3:30:39 PM",
+      "dateFinished": "Feb 24, 2016 3:30:40 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Create sub function to subtract 1\ndef sub(value: Int) \u003d value - 1\n\n// Transform xrangeRDD through map transformation using sub function\n// Because map is a transformation and Spark uses lazy evaluation, no jobs, stages,\n// or tasks will be launched when we run this code.\nval subRDD \u003d xrangeRDD.map(sub)\n\n// Let\u0027s see the RDD transformation hierarchy\nsubRDD.toDebugString",
+      "dateUpdated": "Feb 24, 2016 3:30:38 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456225053034_44080860",
+      "id": "20160223-105733_1958436900",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "sub: (value: Int)Int\nsubRDD: org.apache.spark.rdd.RDD[Int] \u003d MapPartitionsRDD[2] at map at \u003cconsole\u003e:39\nres59: String \u003d \n(8) MapPartitionsRDD[2] at map at \u003cconsole\u003e:39 []\n |  [[My first RDD]] ParallelCollectionRDD[0] at parallelize at \u003cconsole\u003e:34 []\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:57:33 AM",
+      "dateStarted": "Feb 24, 2016 3:32:02 PM",
+      "dateFinished": "Feb 24, 2016 3:32:06 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** (3d) Perform action `collect` to view results **\n#### To see a list of elements decremented by one, we need to create a new list on the driver from the the data distributed in the executor nodes.  To do this we call the `collect()` method on our RDD.  `collect()` is often used after a filter or other operation to ensure that we are only returning a *small* amount of data to the driver.  This is done because the data returned to the driver must fit into the driver\u0027s available memory.  If not, the driver will crash.\n#### The `collect()` method is the first action operation that we have encountered.  Action operations cause Spark to perform the (lazy) transformation operations that are required to compute the RDD returned by the action.  In our example, this means that tasks will now be launched to perform the `parallelize`, `map`, and `collect` operations.\n#### In this example, the dataset is broken into four partitions, so four `collect()` tasks are launched. Each task collects the entries in its partition and sends the result to the SparkContext, which creates a list of the values, as shown in the figure below.\n![collect](http://spark-mooc.github.io/web-assets/images/collect.png)\n#### The above figures showed what would happen if we ran `collect()` on a small example dataset with just four partitions.\n#### Now let\u0027s run `collect()` on `subRDD`.",
+      "dateUpdated": "Feb 24, 2016 3:30:39 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456225179517_-1864137411",
+      "id": "20160223-105939_254886686",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e (3d) Perform action \u003ccode\u003ecollect\u003c/code\u003e to view results \u003cem\u003e\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003eTo see a list of elements decremented by one, we need to create a new list on the driver from the the data distributed in the executor nodes.  To do this we call the \u003ccode\u003ecollect()\u003c/code\u003e method on our RDD.  \u003ccode\u003ecollect()\u003c/code\u003e is often used after a filter or other operation to ensure that we are only returning a \u003cem\u003esmall\u003c/em\u003e amount of data to the driver.  This is done because the data returned to the driver must fit into the driver\u0027s available memory.  If not, the driver will crash.\u003c/h4\u003e\n\u003ch4\u003eThe \u003ccode\u003ecollect()\u003c/code\u003e method is the first action operation that we have encountered.  Action operations cause Spark to perform the (lazy) transformation operations that are required to compute the RDD returned by the action.  In our example, this means that tasks will now be launched to perform the \u003ccode\u003eparallelize\u003c/code\u003e, \u003ccode\u003emap\u003c/code\u003e, and \u003ccode\u003ecollect\u003c/code\u003e operations.\u003c/h4\u003e\n\u003ch4\u003eIn this example, the dataset is broken into four partitions, so four \u003ccode\u003ecollect()\u003c/code\u003e tasks are launched. Each task collects the entries in its partition and sends the result to the SparkContext, which creates a list of the values, as shown in the figure below.\u003c/h4\u003e\n\u003cp\u003e\u003cimg src\u003d\"http://spark-mooc.github.io/web-assets/images/collect.png\" alt\u003d\"collect\" /\u003e\u003c/p\u003e\n\u003ch4\u003eThe above figures showed what would happen if we ran \u003ccode\u003ecollect()\u003c/code\u003e on a small example dataset with just four partitions.\u003c/h4\u003e\n\u003ch4\u003eNow let\u0027s run \u003ccode\u003ecollect()\u003c/code\u003e on \u003ccode\u003esubRDD\u003c/code\u003e.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 10:59:39 AM",
+      "dateStarted": "Feb 24, 2016 3:30:40 PM",
+      "dateFinished": "Feb 24, 2016 3:30:42 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Let\u0027s collect the data\nsubRDD.collect",
+      "dateUpdated": "Feb 24, 2016 3:30:40 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456225231960_-730374348",
+      "id": "20160223-110031_657864924",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res62: Array[Int] \u003d Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 1..."
+      },
+      "dateCreated": "Feb 23, 2016 11:00:31 AM",
+      "dateStarted": "Feb 24, 2016 3:32:03 PM",
+      "dateFinished": "Feb 24, 2016 3:32:08 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** (3d) Perform action `count` to view counts **\n#### One of the most basic jobs that we can run is the `count()` job which will count the number of elements in an RDD using the `count()` action. Since `map()` creates a new RDD with the same number of elements as the starting RDD, we expect that applying `count()` to each RDD will return the same result.\n#### Note that because `count()` is an action operation, if we had not already performed an action with `collect()`, then Spark would now perform the transformation operations when we executed `count()`.\n#### Each task counts the entries in its partition and sends the result to your SparkContext, which adds up all of the counts. The figure below shows what would happen if we ran `count()` on a small example dataset with just four partitions.\n![count](http://spark-mooc.github.io/web-assets/images/count.png)",
+      "dateUpdated": "Feb 24, 2016 3:30:41 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456225251092_-2023500077",
+      "id": "20160223-110051_1060711758",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e (3d) Perform action \u003ccode\u003ecount\u003c/code\u003e to view counts \u003cem\u003e\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003eOne of the most basic jobs that we can run is the \u003ccode\u003ecount()\u003c/code\u003e job which will count the number of elements in an RDD using the \u003ccode\u003ecount()\u003c/code\u003e action. Since \u003ccode\u003emap()\u003c/code\u003e creates a new RDD with the same number of elements as the starting RDD, we expect that applying \u003ccode\u003ecount()\u003c/code\u003e to each RDD will return the same result.\u003c/h4\u003e\n\u003ch4\u003eNote that because \u003ccode\u003ecount()\u003c/code\u003e is an action operation, if we had not already performed an action with \u003ccode\u003ecollect()\u003c/code\u003e, then Spark would now perform the transformation operations when we executed \u003ccode\u003ecount()\u003c/code\u003e.\u003c/h4\u003e\n\u003ch4\u003eEach task counts the entries in its partition and sends the result to your SparkContext, which adds up all of the counts. The figure below shows what would happen if we ran \u003ccode\u003ecount()\u003c/code\u003e on a small example dataset with just four partitions.\u003c/h4\u003e\n\u003cp\u003e\u003cimg src\u003d\"http://spark-mooc.github.io/web-assets/images/count.png\" alt\u003d\"count\" /\u003e\u003c/p\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:00:51 AM",
+      "dateStarted": "Feb 24, 2016 3:30:42 PM",
+      "dateFinished": "Feb 24, 2016 3:30:44 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "xrangeRDD.count\nsubRDD.count",
+      "dateUpdated": "Feb 24, 2016 3:30:42 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456225330386_-2064528647",
+      "id": "20160223-110210_466761466",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res64: Long \u003d 10000\nres65: Long \u003d 10000\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:02:10 AM",
+      "dateStarted": "Feb 24, 2016 3:32:06 PM",
+      "dateFinished": "Feb 24, 2016 3:32:10 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** (3e) Apply transformation `filter` and view results with `collect` **\n#### Next, we\u0027ll create a new RDD that only contains the values less than ten by using the `filter(f)` data-parallel operation. The `filter(f)` method is a transformation operation that creates a new RDD from the input RDD by applying filter function `f` to each item in the parent RDD and only passing those elements where the filter function returns `True`. Elements that do not return `True` will be dropped. Like `map()`, filter can be applied individually to each entry in the dataset, so is easily parallelized using Spark.\n#### The figure below shows how this would work on the small four-partition dataset.\n![filter](http://spark-mooc.github.io/web-assets/images/filter.png)\n#### To filter this dataset, we\u0027ll define a function called `ten()`, which returns `True` if the input is less than 10 and `False` otherwise.  This function will be passed to the `filter()` transformation as the filter function `f`.\n#### To view the filtered list of elements less than ten, we need to create a new list on the driver from the distributed data on the executor nodes.  We use the `collect()` method to return a list that contains all of the elements in this filtered RDD to the driver program.",
+      "dateUpdated": "Feb 24, 2016 3:30:42 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456225367177_-196911513",
+      "id": "20160223-110247_1754881319",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e (3e) Apply transformation \u003ccode\u003efilter\u003c/code\u003e and view results with \u003ccode\u003ecollect\u003c/code\u003e \u003cem\u003e\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003eNext, we\u0027ll create a new RDD that only contains the values less than ten by using the \u003ccode\u003efilter(f)\u003c/code\u003e data-parallel operation. The \u003ccode\u003efilter(f)\u003c/code\u003e method is a transformation operation that creates a new RDD from the input RDD by applying filter function \u003ccode\u003ef\u003c/code\u003e to each item in the parent RDD and only passing those elements where the filter function returns \u003ccode\u003eTrue\u003c/code\u003e. Elements that do not return \u003ccode\u003eTrue\u003c/code\u003e will be dropped. Like \u003ccode\u003emap()\u003c/code\u003e, filter can be applied individually to each entry in the dataset, so is easily parallelized using Spark.\u003c/h4\u003e\n\u003ch4\u003eThe figure below shows how this would work on the small four-partition dataset.\u003c/h4\u003e\n\u003cp\u003e\u003cimg src\u003d\"http://spark-mooc.github.io/web-assets/images/filter.png\" alt\u003d\"filter\" /\u003e\u003c/p\u003e\n\u003ch4\u003eTo filter this dataset, we\u0027ll define a function called \u003ccode\u003eten()\u003c/code\u003e, which returns \u003ccode\u003eTrue\u003c/code\u003e if the input is less than 10 and \u003ccode\u003eFalse\u003c/code\u003e otherwise.  This function will be passed to the \u003ccode\u003efilter()\u003c/code\u003e transformation as the filter function \u003ccode\u003ef\u003c/code\u003e.\u003c/h4\u003e\n\u003ch4\u003eTo view the filtered list of elements less than ten, we need to create a new list on the driver from the distributed data on the executor nodes.  We use the \u003ccode\u003ecollect()\u003c/code\u003e method to return a list that contains all of the elements in this filtered RDD to the driver program.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:02:47 AM",
+      "dateStarted": "Feb 24, 2016 3:30:44 PM",
+      "dateFinished": "Feb 24, 2016 3:30:45 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Define a function to filter a single value\ndef ten(value: Int) \u003d value \u003c 10\n\n// Pass the function ten to the filter transformation\n// Filter is a transformation so no tasks are run\nval filteredRDD \u003d subRDD.filter(ten)\n\n// View the results using collect()\n// Collect is an action and triggers the filter transformation to run\nfilteredRDD.collect",
+      "dateUpdated": "Feb 24, 2016 3:30:43 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456225420022_1137256466",
+      "id": "20160223-110340_1125407187",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "ten: (value: Int)Boolean\nfilteredRDD: org.apache.spark.rdd.RDD[Int] \u003d MapPartitionsRDD[3] at filter at \u003cconsole\u003e:42\nres74: Array[Int] \u003d Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:03:40 AM",
+      "dateStarted": "Feb 24, 2016 3:32:09 PM",
+      "dateFinished": "Feb 24, 2016 3:32:13 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n### ** Part 4: Lambda Functions **",
+      "dateUpdated": "Feb 24, 2016 3:30:44 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456225525895_1120497724",
+      "id": "20160223-110525_1661189730",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch3\u003e\u003cem\u003e\u003c/em\u003e Part 4: Lambda Functions \u003cem\u003e\u003c/em\u003e\u003c/h3\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:05:25 AM",
+      "dateStarted": "Feb 24, 2016 3:30:45 PM",
+      "dateFinished": "Feb 24, 2016 3:30:47 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** (4a) Using Python `lambda()` functions **\n#### Python supports the use of small one-line anonymous functions that are not bound to a name at runtime. Borrowed from LISP, these `lambda` functions can be used wherever function objects are required. They are syntactically restricted to a single expression. Remember that `lambda` functions are a matter of style and using them is never required - semantically, they are just syntactic sugar for a normal function definition. You can always define a separate normal function instead, but using a `lambda()` function is an equivalent and more compact form of coding. Ideally you should consider using `lambda` functions where you want to encapsulate non-reusable code without littering your code with one-line functions.\n#### Here, instead of defining a separate function for the `filter()` transformation, we will use an inline `lambda()` function.",
+      "dateUpdated": "Feb 24, 2016 3:30:45 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456225900589_1632347867",
+      "id": "20160223-111140_1249230683",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e (4a) Using Python \u003ccode\u003elambda()\u003c/code\u003e functions \u003cem\u003e\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003ePython supports the use of small one-line anonymous functions that are not bound to a name at runtime. Borrowed from LISP, these \u003ccode\u003elambda\u003c/code\u003e functions can be used wherever function objects are required. They are syntactically restricted to a single expression. Remember that \u003ccode\u003elambda\u003c/code\u003e functions are a matter of style and using them is never required - semantically, they are just syntactic sugar for a normal function definition. You can always define a separate normal function instead, but using a \u003ccode\u003elambda()\u003c/code\u003e function is an equivalent and more compact form of coding. Ideally you should consider using \u003ccode\u003elambda\u003c/code\u003e functions where you want to encapsulate non-reusable code without littering your code with one-line functions.\u003c/h4\u003e\n\u003ch4\u003eHere, instead of defining a separate function for the \u003ccode\u003efilter()\u003c/code\u003e transformation, we will use an inline \u003ccode\u003elambda()\u003c/code\u003e function.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:11:40 AM",
+      "dateStarted": "Feb 24, 2016 3:30:47 PM",
+      "dateFinished": "Feb 24, 2016 3:30:49 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val lambdaRDD \u003d subRDD.filter(x \u003d\u003e x \u003c 10)\nlambdaRDD.collect",
+      "dateUpdated": "Feb 24, 2016 3:30:45 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456225922873_2035377535",
+      "id": "20160223-111202_781164631",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "lambdaRDD: org.apache.spark.rdd.RDD[Int] \u003d MapPartitionsRDD[4] at filter at \u003cconsole\u003e:37\nres76: Array[Int] \u003d Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:12:02 AM",
+      "dateStarted": "Feb 24, 2016 3:32:11 PM",
+      "dateFinished": "Feb 24, 2016 3:32:15 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Let\u0027s collect the even values less than 10\nval evenRDD \u003d lambdaRDD.filter(_ % 2 \u003d\u003d 0)\nevenRDD.collect",
+      "dateUpdated": "Feb 24, 2016 3:30:46 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456225955190_-1807079082",
+      "id": "20160223-111235_804362441",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "evenRDD: org.apache.spark.rdd.RDD[Int] \u003d MapPartitionsRDD[5] at filter at \u003cconsole\u003e:40\nres79: Array[Int] \u003d Array(0, 2, 4, 6, 8)\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:12:35 AM",
+      "dateStarted": "Feb 24, 2016 3:32:14 PM",
+      "dateFinished": "Feb 24, 2016 3:32:17 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n### ** Part 5: Additional RDD actions **",
+      "dateUpdated": "Feb 24, 2016 3:30:47 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456226019560_-2025708403",
+      "id": "20160223-111339_1335620906",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch3\u003e\u003cem\u003e\u003c/em\u003e Part 5: Additional RDD actions \u003cem\u003e\u003c/em\u003e\u003c/h3\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:13:39 AM",
+      "dateStarted": "Feb 24, 2016 3:30:49 PM",
+      "dateFinished": "Feb 24, 2016 3:30:50 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** (5a) Other common actions **\n#### Let\u0027s investigate the additional actions: [first()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.first), [take()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.take), [top()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.top), [takeOrdered()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.takeOrdered), and [reduce()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.reduce)\n#### One useful thing to do when we have a new dataset is to look at the first few entries to obtain a rough idea of what information is available.  In Spark, we can do that using the `first()`, `take()`, `top()`, and `takeOrdered()` actions. Note that for the `first()` and `take()` actions, the elements that are returned depend on how the RDD is *partitioned*.\n####  Instead of using the `collect()` action, we can use the `take(n)` action to return the first n elements of the RDD. The `first()` action returns the first element of an RDD, and is equivalent to `take(1)`.\n#### The `takeOrdered()` action returns the first n elements of the RDD, using either their natural order or a custom comparator. The key advantage of using `takeOrdered()` instead of `first()` or `take()` is that `takeOrdered()` returns a deterministic result, while the other two actions may return differing results, depending on the number of partions or execution environment. `takeOrdered()` returns the list sorted in *ascending order*.  The `top()` action is similar to `takeOrdered()` except that it returns the list in *descending order.*\n#### The `reduce()` action reduces the elements of a RDD to a single value by applying a function that takes two parameters and returns a single value.  The function should be commutative and associative, as `reduce()` is applied at the partition level and then again to aggregate results from partitions.  If these rules don\u0027t hold, the results from `reduce()` will be inconsistent.  Reducing locally at partitions makes `reduce()` very efficient.",
+      "dateUpdated": "Feb 24, 2016 3:30:48 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456226182780_-952229967",
+      "id": "20160223-111622_1440331744",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e (5a) Other common actions \u003cem\u003e\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003eLet\u0027s investigate the additional actions: \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.first\"\u003efirst()\u003c/a\u003e, \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.take\"\u003etake()\u003c/a\u003e, \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.top\"\u003etop()\u003c/a\u003e, \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.takeOrdered\"\u003etakeOrdered()\u003c/a\u003e, and \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.reduce\"\u003ereduce()\u003c/a\u003e\u003c/h4\u003e\n\u003ch4\u003eOne useful thing to do when we have a new dataset is to look at the first few entries to obtain a rough idea of what information is available.  In Spark, we can do that using the \u003ccode\u003efirst()\u003c/code\u003e, \u003ccode\u003etake()\u003c/code\u003e, \u003ccode\u003etop()\u003c/code\u003e, and \u003ccode\u003etakeOrdered()\u003c/code\u003e actions. Note that for the \u003ccode\u003efirst()\u003c/code\u003e and \u003ccode\u003etake()\u003c/code\u003e actions, the elements that are returned depend on how the RDD is \u003cem\u003epartitioned\u003c/em\u003e.\u003c/h4\u003e\n\u003ch4\u003eInstead of using the \u003ccode\u003ecollect()\u003c/code\u003e action, we can use the \u003ccode\u003etake(n)\u003c/code\u003e action to return the first n elements of the RDD. The \u003ccode\u003efirst()\u003c/code\u003e action returns the first element of an RDD, and is equivalent to \u003ccode\u003etake(1)\u003c/code\u003e.\u003c/h4\u003e\n\u003ch4\u003eThe \u003ccode\u003etakeOrdered()\u003c/code\u003e action returns the first n elements of the RDD, using either their natural order or a custom comparator. The key advantage of using \u003ccode\u003etakeOrdered()\u003c/code\u003e instead of \u003ccode\u003efirst()\u003c/code\u003e or \u003ccode\u003etake()\u003c/code\u003e is that \u003ccode\u003etakeOrdered()\u003c/code\u003e returns a deterministic result, while the other two actions may return differing results, depending on the number of partions or execution environment. \u003ccode\u003etakeOrdered()\u003c/code\u003e returns the list sorted in \u003cem\u003eascending order\u003c/em\u003e.  The \u003ccode\u003etop()\u003c/code\u003e action is similar to \u003ccode\u003etakeOrdered()\u003c/code\u003e except that it returns the list in \u003cem\u003edescending order.\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003eThe \u003ccode\u003ereduce()\u003c/code\u003e action reduces the elements of a RDD to a single value by applying a function that takes two parameters and returns a single value.  The function should be commutative and associative, as \u003ccode\u003ereduce()\u003c/code\u003e is applied at the partition level and then again to aggregate results from partitions.  If these rules don\u0027t hold, the results from \u003ccode\u003ereduce()\u003c/code\u003e will be inconsistent.  Reducing locally at partitions makes \u003ccode\u003ereduce()\u003c/code\u003e very efficient.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:16:22 AM",
+      "dateStarted": "Feb 24, 2016 3:30:50 PM",
+      "dateFinished": "Feb 24, 2016 3:30:52 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Let\u0027s get the first element\nfilteredRDD.first\n// The first 4\nfilteredRDD.take(4)\n// Note that it is ok to take more elements than the RDD has\nfilteredRDD.take(12)",
+      "dateUpdated": "Feb 24, 2016 3:30:49 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456226302714_-429002112",
+      "id": "20160223-111822_2056995271",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res82: Int \u003d 0\nres84: Array[Int] \u003d Array(0, 1, 2, 3)\nres86: Array[Int] \u003d Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:18:22 AM",
+      "dateStarted": "Feb 24, 2016 3:32:16 PM",
+      "dateFinished": "Feb 24, 2016 3:32:19 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Retrieve the three smallest elements\nfilteredRDD.takeOrdered(3)\n// Retrieve the five largest elements\nfilteredRDD.top(5)",
+      "dateUpdated": "Feb 24, 2016 3:30:49 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456226346963_-1619522478",
+      "id": "20160223-111906_432353827",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res89: Array[Int] \u003d Array(0, 1, 2)\nres91: Array[Int] \u003d Array(9, 8, 7, 6, 5)\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:19:06 AM",
+      "dateStarted": "Feb 24, 2016 3:32:18 PM",
+      "dateFinished": "Feb 24, 2016 3:32:21 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Pass a lambda function to takeOrdered to reverse the order\nfilteredRDD.takeOrdered(4)(Ordering[Int].reverse)\nfilteredRDD.takeOrdered(4)(Ordering[Int].on(x \u003d\u003e -x))",
+      "dateUpdated": "Feb 24, 2016 3:30:50 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456226456028_442467827",
+      "id": "20160223-112056_1334129482",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res94: Array[Int] \u003d Array(9, 8, 7, 6)\nres95: Array[Int] \u003d Array(9, 8, 7, 6)\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:20:56 AM",
+      "dateStarted": "Feb 24, 2016 3:32:20 PM",
+      "dateFinished": "Feb 24, 2016 3:32:23 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Obtain Python\u0027s add function\n// from operator import add\n// Efficiently sum the RDD using reduce\n// print filteredRDD.reduce(add)\n\n// Sum using reduce with a lambda function\nfilteredRDD.reduce(_ + _)\n// Note that subtraction is not both associative and commutative\nfilteredRDD.reduce(_ - _)\nfilteredRDD.repartition(4).reduce(_ - _)\n// While addition is\nfilteredRDD.repartition(4).reduce(_ + _)",
+      "dateUpdated": "Feb 24, 2016 3:30:51 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456226473900_2143858111",
+      "id": "20160223-112113_159352084",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res103: Int \u003d 45\nres105: Int \u003d -45\nres106: Int \u003d 7\nres108: Int \u003d 45\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:21:13 AM",
+      "dateStarted": "Feb 24, 2016 3:32:22 PM",
+      "dateFinished": "Feb 24, 2016 3:32:28 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** (5b) Advanced actions **\n#### Here are two additional actions that are useful for retrieving information from an RDD: [takeSample()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.takeSample) and [countByValue()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.countByValue)\n#### The `takeSample()` action returns an array with a random sample of elements from the dataset.  It takes in a `withReplacement` argument, which specifies whether it is okay to randomly pick the same item multiple times from the parent RDD (so when `withReplacement\u003dTrue`, you can get the same item back multiple times). It also takes an optional `seed` parameter that allows you to specify a seed value for the random number generator, so that reproducible results can be obtained.\n#### The `countByValue()` action returns the count of each unique value in the RDD as a dictionary that maps values to counts.",
+      "dateUpdated": "Feb 24, 2016 3:30:52 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456226905631_-1070485274",
+      "id": "20160223-112825_1559594458",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e (5b) Advanced actions \u003cem\u003e\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003eHere are two additional actions that are useful for retrieving information from an RDD: \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.takeSample\"\u003etakeSample()\u003c/a\u003e and \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.countByValue\"\u003ecountByValue()\u003c/a\u003e\u003c/h4\u003e\n\u003ch4\u003eThe \u003ccode\u003etakeSample()\u003c/code\u003e action returns an array with a random sample of elements from the dataset.  It takes in a \u003ccode\u003ewithReplacement\u003c/code\u003e argument, which specifies whether it is okay to randomly pick the same item multiple times from the parent RDD (so when \u003ccode\u003ewithReplacement\u003dTrue\u003c/code\u003e, you can get the same item back multiple times). It also takes an optional \u003ccode\u003eseed\u003c/code\u003e parameter that allows you to specify a seed value for the random number generator, so that reproducible results can be obtained.\u003c/h4\u003e\n\u003ch4\u003eThe \u003ccode\u003ecountByValue()\u003c/code\u003e action returns the count of each unique value in the RDD as a dictionary that maps values to counts.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:28:25 AM",
+      "dateStarted": "Feb 24, 2016 3:30:52 PM",
+      "dateFinished": "Feb 24, 2016 3:30:54 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// takeSample reusing elements\nfilteredRDD.takeSample(withReplacement\u003dtrue, num\u003d6)\n// takeSample without reuse\nfilteredRDD.takeSample(withReplacement\u003dfalse, num\u003d6)",
+      "dateUpdated": "Feb 24, 2016 3:30:52 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456226987030_1005509233",
+      "id": "20160223-112947_1305872900",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res111: Array[Int] \u003d Array(1, 4, 2, 5, 5, 9)\nres113: Array[Int] \u003d Array(7, 0, 6, 2, 5, 9)\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:29:47 AM",
+      "dateStarted": "Feb 24, 2016 3:32:25 PM",
+      "dateFinished": "Feb 24, 2016 3:32:30 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Set seed for predictability\nfilteredRDD.takeSample(withReplacement\u003dfalse, num\u003d6, seed\u003d500)\n// Try reruning this cell and the cell above -- the results from this cell will remain constant",
+      "dateUpdated": "Feb 24, 2016 3:30:53 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456227030652_1866454678",
+      "id": "20160223-113030_1611953410",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res116: Array[Int] \u003d Array(4, 7, 1, 2, 6, 0)\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:30:30 AM",
+      "dateStarted": "Feb 24, 2016 3:32:28 PM",
+      "dateFinished": "Feb 24, 2016 3:32:32 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Create new base RDD to show countByValue\nval repetitiveRDD \u003d sc.parallelize(List(1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 3, 3, 4, 5, 4, 6))\nrepetitiveRDD.countByValue",
+      "dateUpdated": "Feb 24, 2016 3:30:54 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456227078362_789988552",
+      "id": "20160223-113118_553864971",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "repetitiveRDD: org.apache.spark.rdd.RDD[Int] \u003d ParallelCollectionRDD[21] at parallelize at \u003cconsole\u003e:30\nres120: scala.collection.Map[Int,Long] \u003d Map(5 -\u003e 1, 1 -\u003e 4, 6 -\u003e 1, 2 -\u003e 4, 3 -\u003e 5, 4 -\u003e 2)\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:31:18 AM",
+      "dateStarted": "Feb 24, 2016 3:32:31 PM",
+      "dateFinished": "Feb 24, 2016 3:32:35 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n### ** Part 6: Additional RDD transformations **",
+      "dateUpdated": "Feb 24, 2016 3:30:54 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456227142585_-640215055",
+      "id": "20160223-113222_2138942763",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch3\u003e\u003cem\u003e\u003c/em\u003e Part 6: Additional RDD transformations \u003cem\u003e\u003c/em\u003e\u003c/h3\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:32:22 AM",
+      "dateStarted": "Feb 24, 2016 3:30:55 PM",
+      "dateFinished": "Feb 24, 2016 3:30:57 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** (6a) `flatMap` **\n#### When performing a `map()` transformation using a function, sometimes the function will return more (or less) than one element. We would like the newly created RDD to consist of the elements outputted by the function. Simply applying a `map()` transformation would yield a new RDD made up of iterators.  Each iterator could have zero or more elements.  Instead, we often want an RDD consisting of the values contained in those iterators.  The solution is to use a [flatMap()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.flatMap) transformation, `flatMap()` is similar to `map()`, except that with `flatMap()` each input item can be mapped to zero or more output elements.\n#### To demonstrate `flatMap()`, we will first emit a word along with its plural, and then a range that grows in length with each subsequent operation.",
+      "dateUpdated": "Feb 24, 2016 3:30:55 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456227182946_-208264633",
+      "id": "20160223-113302_318818482",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e (6a) \u003ccode\u003eflatMap\u003c/code\u003e \u003cem\u003e\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003eWhen performing a \u003ccode\u003emap()\u003c/code\u003e transformation using a function, sometimes the function will return more (or less) than one element. We would like the newly created RDD to consist of the elements outputted by the function. Simply applying a \u003ccode\u003emap()\u003c/code\u003e transformation would yield a new RDD made up of iterators.  Each iterator could have zero or more elements.  Instead, we often want an RDD consisting of the values contained in those iterators.  The solution is to use a \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.flatMap\"\u003eflatMap()\u003c/a\u003e transformation, \u003ccode\u003eflatMap()\u003c/code\u003e is similar to \u003ccode\u003emap()\u003c/code\u003e, except that with \u003ccode\u003eflatMap()\u003c/code\u003e each input item can be mapped to zero or more output elements.\u003c/h4\u003e\n\u003ch4\u003eTo demonstrate \u003ccode\u003eflatMap()\u003c/code\u003e, we will first emit a word along with its plural, and then a range that grows in length with each subsequent operation.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:33:02 AM",
+      "dateStarted": "Feb 24, 2016 3:30:57 PM",
+      "dateFinished": "Feb 24, 2016 3:30:58 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Let\u0027s create a new base RDD to work from\nval wordsList \u003d List(\"cat\", \"elephant\", \"rat\", \"rat\", \"cat\")\nval wordsRDD \u003d sc.parallelize(wordsList, 4)\n\n// Use map\nval singularAndPluralWordsRDDMap \u003d wordsRDD.map(x \u003d\u003e List(x, x + \"s\"))\n// Use flatMap\nval singularAndPluralWordsRDD \u003d wordsRDD.flatMap(x \u003d\u003e List(x, x + \"s\"))\n\n// View the results\nsingularAndPluralWordsRDDMap.collect\nsingularAndPluralWordsRDD.collect\n// View the number of elements in the RDD\nsingularAndPluralWordsRDDMap.count\nsingularAndPluralWordsRDD.count",
+      "dateUpdated": "Feb 24, 2016 3:30:55 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456227199684_1841708155",
+      "id": "20160223-113319_1485025065",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "wordsList: List[String] \u003d List(cat, elephant, rat, rat, cat)\nwordsRDD: org.apache.spark.rdd.RDD[String] \u003d ParallelCollectionRDD[25] at parallelize at \u003cconsole\u003e:31\nsingularAndPluralWordsRDDMap: org.apache.spark.rdd.RDD[List[String]] \u003d MapPartitionsRDD[26] at map at \u003cconsole\u003e:35\nsingularAndPluralWordsRDD: org.apache.spark.rdd.RDD[String] \u003d MapPartitionsRDD[27] at flatMap at \u003cconsole\u003e:34\nres128: Array[List[String]] \u003d Array(List(cat, cats), List(elephant, elephants), List(rat, rats), List(rat, rats), List(cat, cats))\nres129: Array[String] \u003d Array(cat, cats, elephant, elephants, rat, rats, rat, rats, cat, cats)\nres131: Long \u003d 5\nres132: Long \u003d 10\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:33:19 AM",
+      "dateStarted": "Feb 24, 2016 3:32:33 PM",
+      "dateFinished": "Feb 24, 2016 3:32:39 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val simpleRDD \u003d sc.parallelize(List(2, 3, 4))\nsimpleRDD.map(1 until _).collect\nsimpleRDD.flatMap(1 until _).collect",
+      "dateUpdated": "Feb 24, 2016 3:30:56 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456227315732_-443579363",
+      "id": "20160223-113515_1141231533",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "simpleRDD: org.apache.spark.rdd.RDD[Int] \u003d ParallelCollectionRDD[28] at parallelize at \u003cconsole\u003e:29\nres134: Array[scala.collection.immutable.Range] \u003d Array(Range(1), Range(1, 2), Range(1, 2, 3))\nres135: Array[Int] \u003d Array(1, 1, 2, 1, 2, 3)\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:35:15 AM",
+      "dateStarted": "Feb 24, 2016 3:32:36 PM",
+      "dateFinished": "Feb 24, 2016 3:32:42 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** (6b) `groupByKey` and `reduceByKey` **\n#### Let\u0027s investigate the additional transformations: [groupByKey()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.groupByKey) and [reduceByKey()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.reduceByKey).\n#### Both of these transformations operate on pair RDDs.  A pair RDD is an RDD where each element is a pair tuple (key, value).  For example, `sc.parallelize([(\u0027a\u0027, 1), (\u0027a\u0027, 2), (\u0027b\u0027, 1)])` would create a pair RDD where the keys are \u0027a\u0027, \u0027a\u0027, \u0027b\u0027 and the values are 1, 2, 1.\n#### The `reduceByKey()` transformation gathers together pairs that have the same key and applies a function to two associated values at a time. `reduceByKey()` operates by applying the function first within each partition on a per-key basis and then across the partitions.\n#### While both the `groupByKey()` and `reduceByKey()` transformations can often be used to solve the same problem and will produce the same answer, the `reduceByKey()` transformation works much better for large distributed datasets. This is because Spark knows it can combine output with a common key on each partition *before* shuffling (redistributing) the data across nodes.  Only use `groupByKey()` if the operation would not benefit from reducing the data before the shuffle occurs.\n#### Look at the diagram below to understand how `reduceByKey` works.  Notice how pairs on the same machine with the same key are combined (by using the lamdba function passed into reduceByKey) before the data is shuffled. Then the lamdba function is called again to reduce all the values from each partition to produce one final result.\n![reduceByKey() figure](http://spark-mooc.github.io/web-assets/images/reduce_by.png)\n#### On the other hand, when using the `groupByKey()` transformation - all the key-value pairs are shuffled around, causing a lot of unnecessary data to being transferred over the network.\n#### To determine which machine to shuffle a pair to, Spark calls a partitioning function on the key of the pair. Spark spills data to disk when there is more data shuffled onto a single executor machine than can fit in memory. However, it flushes out the data to disk one key at a time, so if a single key has more key-value pairs than can fit in memory an out of memory exception occurs. This will be more gracefully handled in a later release of Spark so that the job can still proceed, but should still be avoided.  When Spark needs to spill to disk, performance is severely impacted.\n![groupByKey() figure](http://spark-mooc.github.io/web-assets/images/group_by.png)\n#### As your dataset grows, the difference in the amount of data that needs to be shuffled, between the `reduceByKey()` and `groupByKey()` transformations, becomes increasingly exaggerated.\n#### Here are more transformations to prefer over `groupByKey()`:\n  + #### [combineByKey()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.combineByKey) can be used when you are combining elements but your return type differs from your input value type.\n  + #### [foldByKey()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.foldByKey) merges the values for each key using an associative function and a neutral \"zero value\".\n#### Now let\u0027s go through a simple `groupByKey()` and `reduceByKey()` example.",
+      "dateUpdated": "Feb 24, 2016 3:30:57 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456228314768_780912754",
+      "id": "20160223-115154_1019645485",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e (6b) \u003ccode\u003egroupByKey\u003c/code\u003e and \u003ccode\u003ereduceByKey\u003c/code\u003e \u003cem\u003e\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003eLet\u0027s investigate the additional transformations: \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.groupByKey\"\u003egroupByKey()\u003c/a\u003e and \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.reduceByKey\"\u003ereduceByKey()\u003c/a\u003e.\u003c/h4\u003e\n\u003ch4\u003eBoth of these transformations operate on pair RDDs.  A pair RDD is an RDD where each element is a pair tuple (key, value).  For example, \u003ccode\u003esc.parallelize([(\u0027a\u0027, 1), (\u0027a\u0027, 2), (\u0027b\u0027, 1)])\u003c/code\u003e would create a pair RDD where the keys are \u0027a\u0027, \u0027a\u0027, \u0027b\u0027 and the values are 1, 2, 1.\u003c/h4\u003e\n\u003ch4\u003eThe \u003ccode\u003ereduceByKey()\u003c/code\u003e transformation gathers together pairs that have the same key and applies a function to two associated values at a time. \u003ccode\u003ereduceByKey()\u003c/code\u003e operates by applying the function first within each partition on a per-key basis and then across the partitions.\u003c/h4\u003e\n\u003ch4\u003eWhile both the \u003ccode\u003egroupByKey()\u003c/code\u003e and \u003ccode\u003ereduceByKey()\u003c/code\u003e transformations can often be used to solve the same problem and will produce the same answer, the \u003ccode\u003ereduceByKey()\u003c/code\u003e transformation works much better for large distributed datasets. This is because Spark knows it can combine output with a common key on each partition \u003cem\u003ebefore\u003c/em\u003e shuffling (redistributing) the data across nodes.  Only use \u003ccode\u003egroupByKey()\u003c/code\u003e if the operation would not benefit from reducing the data before the shuffle occurs.\u003c/h4\u003e\n\u003ch4\u003eLook at the diagram below to understand how \u003ccode\u003ereduceByKey\u003c/code\u003e works.  Notice how pairs on the same machine with the same key are combined (by using the lamdba function passed into reduceByKey) before the data is shuffled. Then the lamdba function is called again to reduce all the values from each partition to produce one final result.\u003c/h4\u003e\n\u003cp\u003e\u003cimg src\u003d\"http://spark-mooc.github.io/web-assets/images/reduce_by.png\" alt\u003d\"reduceByKey() figure\" /\u003e\u003c/p\u003e\n\u003ch4\u003eOn the other hand, when using the \u003ccode\u003egroupByKey()\u003c/code\u003e transformation - all the key-value pairs are shuffled around, causing a lot of unnecessary data to being transferred over the network.\u003c/h4\u003e\n\u003ch4\u003eTo determine which machine to shuffle a pair to, Spark calls a partitioning function on the key of the pair. Spark spills data to disk when there is more data shuffled onto a single executor machine than can fit in memory. However, it flushes out the data to disk one key at a time, so if a single key has more key-value pairs than can fit in memory an out of memory exception occurs. This will be more gracefully handled in a later release of Spark so that the job can still proceed, but should still be avoided.  When Spark needs to spill to disk, performance is severely impacted.\u003c/h4\u003e\n\u003cp\u003e\u003cimg src\u003d\"http://spark-mooc.github.io/web-assets/images/group_by.png\" alt\u003d\"groupByKey() figure\" /\u003e\u003c/p\u003e\n\u003ch4\u003eAs your dataset grows, the difference in the amount of data that needs to be shuffled, between the \u003ccode\u003ereduceByKey()\u003c/code\u003e and \u003ccode\u003egroupByKey()\u003c/code\u003e transformations, becomes increasingly exaggerated.\u003c/h4\u003e\n\u003ch4\u003eHere are more transformations to prefer over \u003ccode\u003egroupByKey()\u003c/code\u003e:\u003c/h4\u003e\n\u003cul\u003e\n\u003cli\u003e\u003ch4\u003e\u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.combineByKey\"\u003ecombineByKey()\u003c/a\u003e can be used when you are combining elements but your return type differs from your input value type.\u003c/h4\u003e\n\u003c/li\u003e\n\u003cli\u003e\u003ch4\u003e\u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.foldByKey\"\u003efoldByKey()\u003c/a\u003e merges the values for each key using an associative function and a neutral \u0026ldquo;zero value\u0026rdquo;.\u003c/h4\u003e\n\u003ch4\u003eNow let\u0027s go through a simple \u003ccode\u003egroupByKey()\u003c/code\u003e and \u003ccode\u003ereduceByKey()\u003c/code\u003e example.\u003c/h4\u003e\n\u003c/li\u003e\n\u003c/ul\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:51:54 AM",
+      "dateStarted": "Feb 24, 2016 3:30:58 PM",
+      "dateFinished": "Feb 24, 2016 3:31:00 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val pairRDD \u003d sc.parallelize(List((\u0027a\u0027, 1), (\u0027a\u0027, 2), (\u0027b\u0027, 1)))\n// mapValues only used to improve format for printing\npairRDD.groupByKey.mapValues(_.toList).collect\n\n// Different ways to sum by key\npairRDD.groupByKey.map(pair \u003d\u003e (pair._1, pair._2.sum)).collect\n// Using mapValues, which is recommended when they key doesn\u0027t change\npairRDD.groupByKey.mapValues(_.sum).collect\n// reduceByKey is more efficient / scalable\npairRDD.reduceByKey(_ + _).collect",
+      "dateUpdated": "Feb 24, 2016 3:30:57 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456228474629_-687241432",
+      "id": "20160223-115434_104008105",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "pairRDD: org.apache.spark.rdd.RDD[(Char, Int)] \u003d ParallelCollectionRDD[31] at parallelize at \u003cconsole\u003e:29\nres138: Array[(Char, List[Int])] \u003d Array((a,List(1, 2)), (b,List(1)))\nres141: Array[(Char, Int)] \u003d Array((a,3), (b,1))\nres143: Array[(Char, Int)] \u003d Array((a,3), (b,1))\nres145: Array[(Char, Int)] \u003d Array((a,3), (b,1))\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:54:34 AM",
+      "dateStarted": "Feb 24, 2016 3:32:39 PM",
+      "dateFinished": "Feb 24, 2016 3:32:46 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** (6c) Advanced transformations ** [Optional]\n#### Let\u0027s investigate the advanced transformations: [mapPartitions()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.mapPartitions) and [mapPartitionsWithIndex()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.mapPartitionsWithIndex)\n#### The `mapPartitions()` transformation uses a function that takes in an iterator (to the items in that specific partition) and returns an iterator.  The function is applied on a partition by partition basis.\n#### The `mapPartitionsWithIndex()` transformation uses a function that takes in a partition index (think of this like the partition number) and an iterator (to the items in that specific partition). For every partition (index, iterator) pair, the function returns a tuple of the same partition index number and an iterator of the transformed items in that partition.",
+      "dateUpdated": "Feb 24, 2016 3:30:58 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456228533523_1038616252",
+      "id": "20160223-115533_1359562430",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e (6c) Advanced transformations \u003cem\u003e\u003c/em\u003e [Optional]\u003c/h4\u003e\n\u003ch4\u003eLet\u0027s investigate the advanced transformations: \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.mapPartitions\"\u003emapPartitions()\u003c/a\u003e and \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.mapPartitionsWithIndex\"\u003emapPartitionsWithIndex()\u003c/a\u003e\u003c/h4\u003e\n\u003ch4\u003eThe \u003ccode\u003emapPartitions()\u003c/code\u003e transformation uses a function that takes in an iterator (to the items in that specific partition) and returns an iterator.  The function is applied on a partition by partition basis.\u003c/h4\u003e\n\u003ch4\u003eThe \u003ccode\u003emapPartitionsWithIndex()\u003c/code\u003e transformation uses a function that takes in a partition index (think of this like the partition number) and an iterator (to the items in that specific partition). For every partition (index, iterator) pair, the function returns a tuple of the same partition index number and an iterator of the transformed items in that partition.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 11:55:33 AM",
+      "dateStarted": "Feb 24, 2016 3:31:00 PM",
+      "dateFinished": "Feb 24, 2016 3:31:02 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// mapPartitions takes a function that takes an iterator and returns an iterator\ndef join(x: Iterator[String]) \u003d Iterator(x.mkString(\"|\"))\n\nwordsRDD.collect\nval itemsRDD \u003d wordsRDD.mapPartitions(join)\nitemsRDD.collect",
+      "dateUpdated": "Feb 24, 2016 3:30:59 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456229400678_-1987124967",
+      "id": "20160223-121000_684358381",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "join: (x: Iterator[String])Iterator[String]\nres149: Array[String] \u003d Array(cat, elephant, rat, rat, cat)\nitemsRDD: org.apache.spark.rdd.RDD[String] \u003d MapPartitionsRDD[39] at mapPartitions at \u003cconsole\u003e:35\nres150: Array[String] \u003d Array(cat, elephant, rat, rat|cat)\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:10:00 PM",
+      "dateStarted": "Feb 24, 2016 3:32:42 PM",
+      "dateFinished": "Feb 24, 2016 3:32:48 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "def idxIterPair(idx: Int, iter: Iterator[String]) \u003d Iterator(idx, iter.toList)\n\nval itemsByPartRDD \u003d wordsRDD.mapPartitionsWithIndex(idxIterPair)\n// We can see that three of the (partitions) workers have one element and the fourth worker has two\n// elements, although things may not bode well for the rat...\nitemsByPartRDD.collect\n// Rerun without returning a list (acts more like flatMap)\nval itemsByPartRDD \u003d wordsRDD.mapPartitionsWithIndex(idxIterPair)\nitemsByPartRDD.collect",
+      "dateUpdated": "Feb 24, 2016 3:30:59 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456229461197_1061148624",
+      "id": "20160223-121101_680611780",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "idxIterPair: (idx: Int, iter: Iterator[String])Iterator[Any]\nitemsByPartRDD: org.apache.spark.rdd.RDD[Any] \u003d MapPartitionsRDD[40] at mapPartitionsWithIndex at \u003cconsole\u003e:36\nres155: Array[Any] \u003d Array(0, List(cat), 1, List(elephant), 2, List(rat), 3, List(rat, cat))\nitemsByPartRDD: org.apache.spark.rdd.RDD[Any] \u003d MapPartitionsRDD[41] at mapPartitionsWithIndex at \u003cconsole\u003e:36\nres157: Array[Any] \u003d Array(0, List(cat), 1, List(elephant), 2, List(rat), 3, List(rat, cat))\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:11:01 PM",
+      "dateStarted": "Feb 24, 2016 3:32:46 PM",
+      "dateFinished": "Feb 24, 2016 3:32:51 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n### ** Part 7: Caching RDDs and storage options **",
+      "dateUpdated": "Feb 24, 2016 3:31:00 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456230174369_2079786399",
+      "id": "20160223-122254_207367470",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch3\u003e\u003cem\u003e\u003c/em\u003e Part 7: Caching RDDs and storage options \u003cem\u003e\u003c/em\u003e\u003c/h3\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:22:54 PM",
+      "dateStarted": "Feb 24, 2016 3:31:02 PM",
+      "dateFinished": "Feb 24, 2016 3:31:03 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** (7a) Caching RDDs **\n#### For efficiency Spark keeps your RDDs in memory. By keeping the contents in memory, Spark can quickly access the data. However, memory is limited, so if you try to keep too many RDDs in memory, Spark will automatically delete RDDs from memory to make space for new RDDs. If you later refer to one of the RDDs, Spark will automatically recreate the RDD for you, but that takes time.\n#### So, if you plan to use an RDD more than once, then you should tell Spark to cache that RDD. You can use the `cache()` operation to keep the RDD in memory. However, if you cache too many RDDs and Spark runs out of memory, it will delete the least recently used (LRU) RDD first. Again, the RDD will be automatically recreated when accessed.\n#### You can check if an RDD is cached by using the `is_cached` attribute, and you can see your cached RDD in the \"Storage\" section of the Spark web UI. If you click on the RDD\u0027s name, you can see more information about where the RDD is stored.",
+      "dateUpdated": "Feb 24, 2016 3:31:00 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456231482467_205731393",
+      "id": "20160223-124442_2085425550",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e (7a) Caching RDDs \u003cem\u003e\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003eFor efficiency Spark keeps your RDDs in memory. By keeping the contents in memory, Spark can quickly access the data. However, memory is limited, so if you try to keep too many RDDs in memory, Spark will automatically delete RDDs from memory to make space for new RDDs. If you later refer to one of the RDDs, Spark will automatically recreate the RDD for you, but that takes time.\u003c/h4\u003e\n\u003ch4\u003eSo, if you plan to use an RDD more than once, then you should tell Spark to cache that RDD. You can use the \u003ccode\u003ecache()\u003c/code\u003e operation to keep the RDD in memory. However, if you cache too many RDDs and Spark runs out of memory, it will delete the least recently used (LRU) RDD first. Again, the RDD will be automatically recreated when accessed.\u003c/h4\u003e\n\u003ch4\u003eYou can check if an RDD is cached by using the \u003ccode\u003eis_cached\u003c/code\u003e attribute, and you can see your cached RDD in the \u0026ldquo;Storage\u0026rdquo; section of the Spark web UI. If you click on the RDD\u0027s name, you can see more information about where the RDD is stored.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:44:42 PM",
+      "dateStarted": "Feb 24, 2016 3:31:04 PM",
+      "dateFinished": "Feb 24, 2016 3:31:06 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Name the RDD\nfilteredRDD.setName(\"[[My Filtered RDD]]\")\n// Cache the RDD\nfilteredRDD.cache\n// Is it cached\nfilteredRDD.getStorageLevel.useMemory",
+      "dateUpdated": "Feb 24, 2016 3:31:01 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456231496534_-269433498",
+      "id": "20160223-124456_446292541",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res160: filteredRDD.type \u003d [[My Filtered RDD]] MapPartitionsRDD[3] at filter at \u003cconsole\u003e:42\nres162: filteredRDD.type \u003d [[My Filtered RDD]] MapPartitionsRDD[3] at filter at \u003cconsole\u003e:42\nres164: Boolean \u003d true\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:44:56 PM",
+      "dateStarted": "Feb 24, 2016 3:32:49 PM",
+      "dateFinished": "Feb 24, 2016 3:32:52 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** (7b) Unpersist and storage options **\n#### Spark automatically manages the RDDs cached in memory and will save them to disk if it runs out of memory. For efficiency, once you are finished using an RDD, you can optionally tell Spark to stop caching it in memory by using the RDD\u0027s `unpersist()` method to inform Spark that you no longer need the RDD in memory.\n#### You can see the set of transformations that were applied to create an RDD by using the `toDebugString()` method, which will provide storage information, and you can directly query the current storage information for an RDD using the `getStorageLevel()` operation.\n#### ** Advanced: ** Spark provides many more options for managing how RDDs are stored in memory or even saved to disk. You can explore the API for RDD\u0027s [persist()](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.persist) operation using Python\u0027s [help()](https://docs.python.org/2/library/functions.html?highlight\u003dhelp#help) command.  The `persist()` operation, optionally, takes a pySpark [StorageLevel](http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.StorageLevel) object.",
+      "dateUpdated": "Feb 24, 2016 3:31:02 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456231539889_-303214781",
+      "id": "20160223-124539_1028542969",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e (7b) Unpersist and storage options \u003cem\u003e\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003eSpark automatically manages the RDDs cached in memory and will save them to disk if it runs out of memory. For efficiency, once you are finished using an RDD, you can optionally tell Spark to stop caching it in memory by using the RDD\u0027s \u003ccode\u003eunpersist()\u003c/code\u003e method to inform Spark that you no longer need the RDD in memory.\u003c/h4\u003e\n\u003ch4\u003eYou can see the set of transformations that were applied to create an RDD by using the \u003ccode\u003etoDebugString()\u003c/code\u003e method, which will provide storage information, and you can directly query the current storage information for an RDD using the \u003ccode\u003egetStorageLevel()\u003c/code\u003e operation.\u003c/h4\u003e\n\u003ch4\u003e\u003cem\u003e\u003c/em\u003e Advanced: \u003cem\u003e\u003c/em\u003e Spark provides many more options for managing how RDDs are stored in memory or even saved to disk. You can explore the API for RDD\u0027s \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD.persist\"\u003epersist()\u003c/a\u003e operation using Python\u0027s \u003ca href\u003d\"https://docs.python.org/2/library/functions.html?highlight\u003dhelp#help\"\u003ehelp()\u003c/a\u003e command.  The \u003ccode\u003epersist()\u003c/code\u003e operation, optionally, takes a pySpark \u003ca href\u003d\"http://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.StorageLevel\"\u003eStorageLevel\u003c/a\u003e object.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:45:39 PM",
+      "dateStarted": "Feb 24, 2016 3:31:06 PM",
+      "dateFinished": "Feb 24, 2016 3:31:07 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Note that toDebugString also provides storage information\nfilteredRDD.toDebugString",
+      "dateUpdated": "Feb 24, 2016 3:31:02 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456231654849_675771956",
+      "id": "20160223-124734_325202094",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res167: String \u003d \n(8) [[My Filtered RDD]] MapPartitionsRDD[3] at filter at \u003cconsole\u003e:42 [Memory Deserialized 1x Replicated]\n |  MapPartitionsRDD[2] at map at \u003cconsole\u003e:39 [Memory Deserialized 1x Replicated]\n |  [[My first RDD]] ParallelCollectionRDD[0] at parallelize at \u003cconsole\u003e:34 [Memory Deserialized 1x Replicated]\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:47:34 PM",
+      "dateStarted": "Feb 24, 2016 3:32:52 PM",
+      "dateFinished": "Feb 24, 2016 3:32:56 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// If we are done with the RDD we can unpersist it so that its memory can be reclaimed\nfilteredRDD.unpersist(_)\n// Storage level for a non cached RDD\nfilteredRDD.getStorageLevel\nfilteredRDD.cache\n// Storage level for a cached RDD\nfilteredRDD.getStorageLevel",
+      "dateUpdated": "Feb 24, 2016 3:31:03 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456231675009_169072979",
+      "id": "20160223-124755_1799359405",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res170: Boolean \u003d\u003e filteredRDD.type \u003d \u003cfunction1\u003e\nres172: org.apache.spark.storage.StorageLevel \u003d StorageLevel(false, true, false, true, 1)\nres173: filteredRDD.type \u003d [[My Filtered RDD]] MapPartitionsRDD[3] at filter at \u003cconsole\u003e:42\nres175: org.apache.spark.storage.StorageLevel \u003d StorageLevel(false, true, false, true, 1)\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:47:55 PM",
+      "dateStarted": "Feb 24, 2016 3:32:54 PM",
+      "dateFinished": "Feb 24, 2016 3:32:58 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n### ** Part 8: Debugging Spark applications and lazy evaluation **",
+      "dateUpdated": "Feb 24, 2016 3:31:03 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456231706674_-179311955",
+      "id": "20160223-124826_337024998",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch3\u003e\u003cem\u003e\u003c/em\u003e Part 8: Debugging Spark applications and lazy evaluation \u003cem\u003e\u003c/em\u003e\u003c/h3\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:48:26 PM",
+      "dateStarted": "Feb 24, 2016 3:31:08 PM",
+      "dateFinished": "Feb 24, 2016 3:31:09 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** How Python is Executed in Spark **\n#### Internally, Spark executes using a Java Virtual Machine (JVM). pySpark runs Python code in a JVM using [Py4J](http://py4j.sourceforge.net). Py4J enables Python programs running in a Python interpreter to dynamically access Java objects in a Java Virtual Machine. Methods are called as if the Java objects resided in the Python interpreter and Java collections can be accessed through standard Python collection methods. Py4J also enables Java programs to call back Python objects.\n#### Because pySpark uses Py4J, coding errors often result in a complicated, confusing stack trace that can be difficult to understand. In the following section, we\u0027ll explore how to understand stack traces.",
+      "dateUpdated": "Feb 24, 2016 3:31:04 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456231904984_1893069859",
+      "id": "20160223-125144_2077511478",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e How Python is Executed in Spark \u003cem\u003e\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003eInternally, Spark executes using a Java Virtual Machine (JVM). pySpark runs Python code in a JVM using \u003ca href\u003d\"http://py4j.sourceforge.net\"\u003ePy4J\u003c/a\u003e. Py4J enables Python programs running in a Python interpreter to dynamically access Java objects in a Java Virtual Machine. Methods are called as if the Java objects resided in the Python interpreter and Java collections can be accessed through standard Python collection methods. Py4J also enables Java programs to call back Python objects.\u003c/h4\u003e\n\u003ch4\u003eBecause pySpark uses Py4J, coding errors often result in a complicated, confusing stack trace that can be difficult to understand. In the following section, we\u0027ll explore how to understand stack traces.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:51:44 PM",
+      "dateStarted": "Feb 24, 2016 3:31:10 PM",
+      "dateFinished": "Feb 24, 2016 3:31:11 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** (8a) Challenges with lazy evaluation using transformations and actions **\n#### Spark\u0027s use of lazy evaluation can make debugging more difficult because code is not always executed immediately. To see an example of how this can happen, let\u0027s first define a broken filter function.\n#### Next we perform a `filter()` operation using the broken filtering function.  No error will occur at this point due to Spark\u0027s use of lazy evaluation.\n#### The `filter()` method will not be executed *until* an action operation is invoked on the RDD.  We will perform an action by using the `collect()` method to return a list that contains all of the elements in this RDD.",
+      "dateUpdated": "Feb 24, 2016 3:31:05 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456231920303_283295785",
+      "id": "20160223-125200_1918801148",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e (8a) Challenges with lazy evaluation using transformations and actions \u003cem\u003e\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003eSpark\u0027s use of lazy evaluation can make debugging more difficult because code is not always executed immediately. To see an example of how this can happen, let\u0027s first define a broken filter function.\u003c/h4\u003e\n\u003ch4\u003eNext we perform a \u003ccode\u003efilter()\u003c/code\u003e operation using the broken filtering function.  No error will occur at this point due to Spark\u0027s use of lazy evaluation.\u003c/h4\u003e\n\u003ch4\u003eThe \u003ccode\u003efilter()\u003c/code\u003e method will not be executed \u003cem\u003euntil\u003c/em\u003e an action operation is invoked on the RDD.  We will perform an action by using the \u003ccode\u003ecollect()\u003c/code\u003e method to return a list that contains all of the elements in this RDD.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:52:00 PM",
+      "dateStarted": "Feb 24, 2016 3:31:11 PM",
+      "dateFinished": "Feb 24, 2016 3:31:13 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// unlike python, scala compiler reports error before run filtering\ndef brokenTen(value: Int) \u003d val \u003c 10\n\nval brokenRDD \u003d subRDD.filter(brokenTen)",
+      "dateUpdated": "Feb 24, 2016 3:31:05 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456231933743_648837888",
+      "id": "20160223-125213_1616008694",
+      "result": {
+        "code": "ERROR",
+        "type": "TEXT",
+        "msg": "\u003cconsole\u003e:2: error: illegal start of simple expression\n       def brokenTen(value: Int) \u003d val \u003c 10\n                                   ^\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:52:13 PM",
+      "dateStarted": "Feb 24, 2016 3:32:57 PM",
+      "dateFinished": "Feb 24, 2016 3:32:59 PM",
+      "status": "ERROR",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** (8b) Finding the bug **\n#### When the `filter()` method is executed, Spark evaluates the RDD by executing the `parallelize()` and `filter()` methods. Since our `filter()` method has an error in the filtering function `brokenTen()`, an error occurs.\n#### Scroll through the output \"Py4JJavaError     Traceback (most recent call last)\" part of the cell and first you will see that the line that generated the error is the `collect()` method line. There is *nothing wrong with this line*. However, it is an action and that caused other methods to be executed. Continue scrolling through the Traceback and you will see the following error line:\n    NameError: global name \u0027val\u0027 is not defined\n#### Looking at this error line, we can see that we used the wrong variable name in our filtering function `brokenTen()`.",
+      "dateUpdated": "Feb 24, 2016 3:31:06 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456232035141_788804410",
+      "id": "20160223-125355_298514277",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e (8b) Finding the bug \u003cem\u003e\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003eWhen the \u003ccode\u003efilter()\u003c/code\u003e method is executed, Spark evaluates the RDD by executing the \u003ccode\u003eparallelize()\u003c/code\u003e and \u003ccode\u003efilter()\u003c/code\u003e methods. Since our \u003ccode\u003efilter()\u003c/code\u003e method has an error in the filtering function \u003ccode\u003ebrokenTen()\u003c/code\u003e, an error occurs.\u003c/h4\u003e\n\u003ch4\u003eScroll through the output \u0026ldquo;Py4JJavaError     Traceback (most recent call last)\u0026rdquo; part of the cell and first you will see that the line that generated the error is the \u003ccode\u003ecollect()\u003c/code\u003e method line. There is \u003cem\u003enothing wrong with this line\u003c/em\u003e. However, it is an action and that caused other methods to be executed. Continue scrolling through the Traceback and you will see the following error line:\u003c/h4\u003e\n\u003cpre\u003e\u003ccode\u003eNameError: global name \u0027val\u0027 is not defined\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch4\u003eLooking at this error line, we can see that we used the wrong variable name in our filtering function \u003ccode\u003ebrokenTen()\u003c/code\u003e.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:53:55 PM",
+      "dateStarted": "Feb 24, 2016 3:31:13 PM",
+      "dateFinished": "Feb 24, 2016 3:31:14 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** (8c) Moving toward expert style **\n#### As you are learning Spark, I recommend that you write your code in the form:\n    RDD.transformation1()\n    RDD.action1()\n    RDD.transformation2()\n    RDD.action2()\n#### Using this style will make debugging your code much easier as it makes errors easier to localize - errors in your transformations will occur when the next action is executed.\n#### Once you become more experienced with Spark, you can write your code with the form:\n    RDD.transformation1().transformation2().action()\n#### We can also use `lambda()` functions instead of separately defined functions when their use improves readability and conciseness.",
+      "dateUpdated": "Feb 24, 2016 3:31:07 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456232091425_-2077297416",
+      "id": "20160223-125451_1739913582",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e (8c) Moving toward expert style \u003cem\u003e\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003eAs you are learning Spark, I recommend that you write your code in the form:\u003c/h4\u003e\n\u003cpre\u003e\u003ccode\u003eRDD.transformation1()\nRDD.action1()\nRDD.transformation2()\nRDD.action2()\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch4\u003eUsing this style will make debugging your code much easier as it makes errors easier to localize - errors in your transformations will occur when the next action is executed.\u003c/h4\u003e\n\u003ch4\u003eOnce you become more experienced with Spark, you can write your code with the form:\u003c/h4\u003e\n\u003cpre\u003e\u003ccode\u003eRDD.transformation1().transformation2().action()\n\u003c/code\u003e\u003c/pre\u003e\n\u003ch4\u003eWe can also use \u003ccode\u003elambda()\u003c/code\u003e functions instead of separately defined functions when their use improves readability and conciseness.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:54:51 PM",
+      "dateStarted": "Feb 24, 2016 3:31:14 PM",
+      "dateFinished": "Feb 24, 2016 3:31:15 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Cleaner code through lambda use\nsubRDD.filter(_ \u003c 10).collect",
+      "dateUpdated": "Feb 24, 2016 3:31:07 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456232264761_-732771865",
+      "id": "20160223-125744_547449262",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res179: Array[Int] \u003d Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:57:44 PM",
+      "dateStarted": "Feb 24, 2016 3:32:59 PM",
+      "dateFinished": "Feb 24, 2016 3:33:01 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Even better by moving our chain of operators into a single line.\nsc.parallelize(data).map(_ - 1).filter(_ \u003c 10).collect",
+      "dateUpdated": "Feb 24, 2016 3:31:08 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456232311264_447530491",
+      "id": "20160223-125831_611832598",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res182: Array[Int] \u003d Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:58:31 PM",
+      "dateStarted": "Feb 24, 2016 3:33:01 PM",
+      "dateFinished": "Feb 24, 2016 3:33:02 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n#### ** (8d) Readability and code style **\n#### To make the expert coding style more readable, enclose the statement in parentheses and put each method, transformation, or action on a separate line.",
+      "dateUpdated": "Feb 24, 2016 3:31:08 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456232335501_-1594485164",
+      "id": "20160223-125855_460287669",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003ch4\u003e\u003cem\u003e\u003c/em\u003e (8d) Readability and code style \u003cem\u003e\u003c/em\u003e\u003c/h4\u003e\n\u003ch4\u003eTo make the expert coding style more readable, enclose the statement in parentheses and put each method, transformation, or action on a separate line.\u003c/h4\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:58:55 PM",
+      "dateStarted": "Feb 24, 2016 3:31:15 PM",
+      "dateFinished": "Feb 24, 2016 3:31:16 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "// Final version\n(sc\n  .parallelize(data)\n  .map(_ - 1)\n  .filter(_ \u003c 10)\n  .collect)",
+      "dateUpdated": "Feb 24, 2016 3:31:09 PM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456232360893_1730176055",
+      "id": "20160223-125920_180730137",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "res185: Array[Int] \u003d Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)\n"
+      },
+      "dateCreated": "Feb 23, 2016 12:59:20 PM",
+      "dateStarted": "Feb 24, 2016 3:33:02 PM",
+      "dateFinished": "Feb 24, 2016 3:33:04 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%md\n\n**기타 RDD 관련 함수와 예제들은 [이곳](http://homepage.cs.latrobe.edu.au/zhe/ZhenHeSparkRDDAPIExamples.html)을 참고하시면 좋습니다.**",
+      "dateUpdated": "Feb 26, 2016 3:43:16 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/markdown",
+        "editorHide": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456232411451_-172914599",
+      "id": "20160223-130011_192879177",
+      "result": {
+        "code": "SUCCESS",
+        "type": "HTML",
+        "msg": "\u003cp\u003e\u003cstrong\u003e기타 RDD 관련 함수와 예제들은 \u003ca href\u003d\"http://homepage.cs.latrobe.edu.au/zhe/ZhenHeSparkRDDAPIExamples.html\"\u003e이곳\u003c/a\u003e을 참고하시면 좋습니다.\u003c/strong\u003e\u003c/p\u003e\n"
+      },
+      "dateCreated": "Feb 23, 2016 1:00:11 PM",
+      "dateStarted": "Feb 26, 2016 3:43:12 AM",
+      "dateFinished": "Feb 26, 2016 3:43:13 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1456458170451_635326629",
+      "id": "20160226-034250_1724785707",
+      "dateCreated": "Feb 26, 2016 3:42:50 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "Spark 맛보기",
+  "id": "2BDZHAYPS",
+  "angularObjects": {
+    "2BCXT4EMZ": [],
+    "2BDUUR8VM": [],
+    "2BD1WSCUT": [],
+    "2BBSKQMQP": [],
+    "2BD8KU4ZX": [],
+    "2BCNX7XJ5": [],
+    "2BCFCM4H2": [],
+    "2BES5RH3E": [],
+    "2BBMK65YZ": [],
+    "2BETWU73M": [],
+    "2BCH33WQT": [],
+    "2BBJXF9PM": [],
+    "2BEJ61NTA": [],
+    "2BEUC6XBN": [],
+    "2BD6YJVY5": []
+  },
+  "config": {
+    "looknfeel": "default"
+  },
+  "info": {}
+}
